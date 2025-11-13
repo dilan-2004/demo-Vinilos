@@ -7,7 +7,11 @@ import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
 import java.util.List;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
+@SuppressWarnings("null")
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
@@ -25,6 +29,15 @@ public class ProductService {
     }
     public Product updateProduct(Product product) {
         return productRepository.save(product);
+    }
+
+    public void deleteByUsuarioId(Integer usuarioId) {
+        List<Product> products = productRepository.findAll();
+        for (Product product : products) {
+            if (product.getUsuario() != null && product.getUsuario().getId().equals(usuarioId)) {
+                productRepository.deleteById(product.getId());
+            }
+        }
     }
 
     public void deleteProduct(Long id) {

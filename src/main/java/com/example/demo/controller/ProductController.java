@@ -15,7 +15,6 @@ import com.example.demo.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -43,11 +42,12 @@ public class ProductController {
         return productService.saveProduct(product);
     }
 
+    @SuppressWarnings("null")
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing product")
     public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
         Product existingProduct = productService.getProductById(id);
-        if (existingProduct == null) {
+        if (existingProduct != null) {
             existingProduct.setAutor(product.getAutor());
             existingProduct.setNombre(product.getNombre());
             existingProduct.setPrecio(product.getPrecio());
