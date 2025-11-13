@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.service.UsuarioService;
 
-
 import com.example.demo.model.Usuario;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
-    
+
     @Autowired
     private UsuarioService usuarioService;
 
@@ -39,7 +38,7 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         Usuario login = usuarioService.login(usuario);
-        
+
         if (login != null) {
             login.setContrasena(null);
             return ResponseEntity.ok(login);
@@ -47,7 +46,7 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Integer id) {
         Usuario usuario = usuarioService.findById(id);
@@ -87,6 +86,6 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
         usuarioService.deleteById(id);
-        return ResponseEntity.noContent().build();  
-    }        
+        return ResponseEntity.noContent().build();
+    }
 }

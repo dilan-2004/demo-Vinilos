@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@Tag(name = "Product Management System")
+@Tag(name = "Product")
 public class ProductController {
     @Autowired
     private ProductService productService;
