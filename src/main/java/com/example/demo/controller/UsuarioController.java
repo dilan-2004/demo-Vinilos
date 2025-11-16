@@ -1,91 +1,154 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
+import com.example.demo.model.Usuario;
+import com.example.demo.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.service.UsuarioService;
-
-import com.example.demo.model.Usuario;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class); // Logger
     @Autowired
     private UsuarioService usuarioService;
-
     @GetMapping
-    public ResponseEntity<List<Usuario>> getallUsuario() {
-        List<Usuario> usuarios = usuarioService.findAll();
-        if (usuarios.isEmpty()) {
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<List<Usuario>> getAllUsuario() {
+        try {
+            List<Usuario> usuarios = usuarioService.findAll();
+            if (usuarios.isEmpty()) {
+                logger.info("No se encontraron usuarios.");
+                return ResponseEntity.noContent().build();
+            }
+            logger.info("Se encontraron {} usuarios.", usuarios.size());
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            logger.error("Error al obtener todos los usuarios", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(usuarios);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
-        Usuario login = usuarioService.login(usuario);
+        try {
+            Usuario login = usuarioService.login(usuario);
 
-        if (login != null) {
-            login.setContrasena(null);
-            return ResponseEntity.ok(login);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+            if (login != null) {
+                login.setContrasena(null);
+                logger.info("Login exitoso para el usuario: {}", login.getCorreo());
+                return ResponseEntity.ok(login);
+            } else {
+                logger.warn("Credenciales inválidas para el correo: {}", usuario.getCorreo());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+            }
+        } catch (Exception e) {
+            logger.error("Error durante el login para el correo: {}", usuario.getCorreo(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Integer id) {
-        Usuario usuario = usuarioService.findById(id);
-        if (usuario == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            Usuario usuario = usuarioService.findById(id);
+            if (usuario == null) {
+                logger.warn("Usuario con ID {} no encontrado.", id);
+                return ResponseEntity.notFound().build();
+            }
+            logger.info("Usuario con ID {} encontrado.", id);
+            return ResponseEntity.ok(usuario);
+        } catch (IllegalArgumentException e) {
+            logger.error("ID de usuario inválido: {}", id, e);
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            logger.error("Error al obtener usuario por ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(usuario);
     }
 
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
-        usuario.setId(null);
-        Usuario usuarioNew = usuarioService.save(usuario);
-        return ResponseEntity.status(201).body(usuarioNew);
+        try {
+            usuario.setId(null);
+            
+            Usuario usuarioNew = usuarioService.save(usuario);
+            logger.info("Usuario creado exitosamente con ID: {}", usuarioNew.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioNew);
+        } catch (RuntimeException e) { 
+            logger.error("Error al crear usuario: {}", e.getMessage(), e);
+            
+            if (e.getMessage().contains("Rol")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) { 
+            logger.error("Error inesperado al crear usuario", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        usuario.setId(id);
-        Usuario updatedUsuario = usuarioService.save(usuario);
-        if (updatedUsuario == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            usuario.setId(id);
+            Usuario updatedUsuario = usuarioService.save(usuario);
+            if (updatedUsuario == null) {
+                logger.warn("Usuario con ID {} no encontrado para actualizar.", id);
+                return ResponseEntity.notFound().build();
+            }
+            logger.info("Usuario con ID {} actualizado exitosamente.", id);
+            return ResponseEntity.ok(updatedUsuario);
+        } catch (RuntimeException e) { 
+            logger.error("Error al actualizar usuario con ID {}: {}", id, e.getMessage(), e);
+            if (e.getMessage().contains("Rol")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            logger.error("Error inesperado al actualizar usuario con ID {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(updatedUsuario);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Usuario> updateParcialUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        usuario.setId(id);
-        Usuario updatedUsuario = usuarioService.partialUpdate(usuario);
-        if (updatedUsuario == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            usuario.setId(id);
+            Usuario updatedUsuario = usuarioService.partialUpdate(usuario);
+            if (updatedUsuario == null) {
+                logger.warn("Usuario con ID {} no encontrado para actualización parcial.", id);
+                return ResponseEntity.notFound().build();
+            }
+            logger.info("Usuario con ID {} actualizado parcialmente exitosamente.", id);
+            return ResponseEntity.ok(updatedUsuario);
+        } catch (RuntimeException e) { 
+            logger.error("Error al actualizar parcialmente usuario con ID {}: {}", id, e.getMessage(), e);
+            if (e.getMessage().contains("Rol")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            logger.error("Error inesperado al actualizar parcialmente usuario con ID {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(updatedUsuario);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
-        usuarioService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            usuarioService.deleteById(id);
+            logger.info("Usuario con ID {} eliminado exitosamente.", id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            logger.error("Error al eliminar usuario con ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
