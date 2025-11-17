@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.model.Rol;
+import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.RolRepository;
 
 
@@ -27,13 +28,13 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private RolRepository rolRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder; 
-
-    @Autowired
-    private ProductService productService;
 
     public List<Usuario> findAll() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -142,13 +143,12 @@ public class UsuarioService {
         }
     }
 
-    public void deleteById(Integer id) {
-        
+     public void deleteById(Integer id) {
         if (!usuarioRepository.existsById(id)) {
              logger.warn("Intento de eliminación fallido: Usuario con ID {} no encontrado.", id);
-                }
-        logger.info("Eliminando usuario con ID: {}", id);
-        productService.deleteByUsuarioId(id);
-        usuarioRepository.deleteById(id);
+        }
+        logger.info("Eliminando usuario con ID: {} y sus productos asociados.", id);
+        
+        productRepository.deleteByUsuarioId(id);
     }
 }
