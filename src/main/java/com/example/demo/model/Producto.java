@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -41,17 +42,11 @@ public class Producto {
     @JoinColumn(name = "genero_id")
     private Genero genero;
 
-    @OneToMany(mappedBy = "producto",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Imagen> imagenes = new ArrayList<>();
-        
 
-    @ManyToOne
-    @JoinTable(
-        name = "producto_artista",
-        joinColumns = @JoinColumn(name = "producto_id"),
-        inverseJoinColumns = @JoinColumn(name = "artista_id")
-    )
-    private List<Artista> artistas;    
+    @ManyToMany
+    @JoinTable(name = "producto_artista", joinColumns = @JoinColumn(name = "producto_id"), inverseJoinColumns = @JoinColumn(name = "artista_id"))
+    private List<Artista> artistas = new ArrayList<>();
 
-    
 }
