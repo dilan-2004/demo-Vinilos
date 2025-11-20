@@ -5,10 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.model.Rol;
+import com.example.demo.model.Genero;
 
 @Repository
-public interface RolRepository extends JpaRepository<Rol, Integer> {
-
-    Optional<Rol> findById(Long id);
+public interface GeneroRepository extends JpaRepository<Genero, Long> {
+    Optional<Genero> findByNombre(String nombre);
 }

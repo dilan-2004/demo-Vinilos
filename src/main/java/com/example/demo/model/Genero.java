@@ -11,16 +11,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class Rol {
-
+@Table(name = "generos")
+public class Genero {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    
-    @Column(unique = true, nullable = false)
+    private long id;
+
+    @Column(nullable = false, unique = true)
     private String nombre;
 }
