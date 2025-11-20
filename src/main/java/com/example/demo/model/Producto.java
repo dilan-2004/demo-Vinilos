@@ -50,7 +50,6 @@ public class Producto {
         name = "producto_artista",
         joinColumns = @JoinColumn(name = "producto_id"),
         inverseJoinColumns = @JoinColumn(name = "artista_id")
-    
     )
     private List<Artista> artistas;    
 
