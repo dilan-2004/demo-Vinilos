@@ -31,4 +31,24 @@ public class ProductoController {
     public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
         return ResponseEntity.ok(productoService.guardarProducto(producto));
     }
+
+     @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+        productoService.eliminarProducto(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
+        return productoService.obtenerPorId(id)
+                .map(producto -> ResponseEntity.ok(productoService.actualizarProducto(id, productoActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Producto> actualizarParcialmenteProducto(@PathVariable Long id, @RequestBody Producto datosActualizados) {
+        return productoService.actualizarParcialmenteProducto(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

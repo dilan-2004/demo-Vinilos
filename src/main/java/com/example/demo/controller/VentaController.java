@@ -31,4 +31,24 @@ public class VentaController {
     public ResponseEntity<Venta> crearVenta(@RequestParam Long usuarioId) {
         return ResponseEntity.ok(ventaService.crearVenta(usuarioId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarVenta(@PathVariable Long id) {
+        ventaService.eliminarVenta(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Venta> actualizarVenta(@PathVariable Long id, @RequestBody Venta ventaActualizada) {
+        return ventaService.obtenerPorId(id)
+                .map(venta -> ResponseEntity.ok(ventaService.actualizarVenta(id, ventaActualizada)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Venta> actualizarParcialmenteVenta(@PathVariable Long id, @RequestBody Venta datosActualizados) {
+        return ventaService.actualizarParcialmenteVenta(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

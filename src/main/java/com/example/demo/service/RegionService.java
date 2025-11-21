@@ -25,4 +25,25 @@ public class RegionService {
     public Region guardarRegion(Region region) {
         return regionRepository.save(region);
     }
+
+    public void eliminarRegion(Long id) {
+        regionRepository.deleteById(id);
+    }
+
+    public Region actualizarRegion(Long id, Region regionActualizada) {
+        regionActualizada.setId(id);
+        return regionRepository.save(regionActualizada);
+    }
+
+    public Optional<Region> actualizarParcialmenteRegion(Long id, Region datosActualizados) {
+        Optional<Region> regionExistente = regionRepository.findById(id);
+        if (regionExistente.isPresent()) {
+            Region region = regionExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                region.setNombre(datosActualizados.getNombre());
+            }
+            return Optional.of(regionRepository.save(region));
+        }
+        return Optional.empty();
+    }
 }

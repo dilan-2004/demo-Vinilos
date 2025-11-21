@@ -42,4 +42,32 @@ public class VentaService {
     public Venta guardarVenta(Venta venta) {
         return ventaRepository.save(venta);
     }
+
+    public void eliminarVenta(Long id) {
+        ventaRepository.deleteById(id);
+    }
+
+    public Venta actualizarVenta(Long id, Venta ventaActualizada) {
+        ventaActualizada.setId(id);
+        if (ventaActualizada.getUsuario() != null && ventaActualizada.getUsuario().getId() != null) {
+            Usuario usuario = usuarioRepository.findById(ventaActualizada.getUsuario().getId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            ventaActualizada.setUsuario(usuario);
+        }
+        return ventaRepository.save(ventaActualizada);
+    }
+
+    public Optional<Venta> actualizarParcialmenteVenta(Long id, Venta datosActualizados) {
+        Optional<Venta> ventaExistente = ventaRepository.findById(id);
+        if (ventaExistente.isPresent()) {
+            Venta venta = ventaExistente.get();
+            if (datosActualizados.getUsuario() != null && datosActualizados.getUsuario().getId() != null) {
+                Usuario usuario = usuarioRepository.findById(datosActualizados.getUsuario().getId())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                venta.setUsuario(usuario);
+            }
+            return Optional.of(ventaRepository.save(venta));
+        }
+        return Optional.empty();
+    }
 }

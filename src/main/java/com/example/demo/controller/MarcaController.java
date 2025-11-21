@@ -31,4 +31,24 @@ public class MarcaController {
     public ResponseEntity<Marca> crearMarca(@RequestBody Marca marca) {
         return ResponseEntity.ok(marcaService.guardarMarca(marca));
     }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarMarca(@PathVariable Long id) {
+        marcaService.eliminarMarca(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Marca> actualizarMarca(@PathVariable Long id, @RequestBody Marca marcaActualizada) {
+        return marcaService.obtenerPorId(id)
+                .map(marca -> ResponseEntity.ok(marcaService.actualizarMarca(id, marcaActualizada)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Marca> actualizarParcialmenteMarca(@PathVariable Long id, @RequestBody Marca datosActualizados) {
+        return marcaService.actualizarParcialmenteMarca(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

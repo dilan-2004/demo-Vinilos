@@ -31,4 +31,23 @@ public class GeneroController {
     public ResponseEntity<Genero> crearGenero(@RequestBody Genero genero) {
         return ResponseEntity.ok(generoService.guardarGenero(genero));
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarGenero(@PathVariable Long id) {
+        generoService.eliminarGenero(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Genero> actualizarGenero(@PathVariable Long id, @RequestBody Genero generoActualizado) {
+        return generoService.obtenerPorId(id)
+                .map(genero -> ResponseEntity.ok(generoService.actualizarGenero(id, generoActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Genero> actualizarParcialmenteGenero(@PathVariable Long id, @RequestBody Genero datosActualizados) {
+        return generoService.actualizarParcialmenteGenero(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -31,4 +31,23 @@ public class EstadoController {
     public ResponseEntity<Estado> crearEstado(@RequestBody Estado estado) {
         return ResponseEntity.ok(estadoService.guardarEstado(estado));
     }
+     @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarEstado(@PathVariable Long id) {
+        estadoService.eliminarEstado(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Estado> actualizarEstado(@PathVariable Long id, @RequestBody Estado estadoActualizado) {
+        return estadoService.obtenerPorId(id)
+                .map(estado -> ResponseEntity.ok(estadoService.actualizarEstado(id, estadoActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Estado> actualizarParcialmenteEstado(@PathVariable Long id, @RequestBody Estado datosActualizados) {
+        return estadoService.actualizarParcialmenteEstado(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

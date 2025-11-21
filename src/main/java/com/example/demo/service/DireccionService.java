@@ -25,4 +25,30 @@ public class DireccionService {
     public Direccion guardarDireccion(Direccion direccion) {
         return direccionRepository.save(direccion);
     }
+    public void eliminarDireccion(Long id) {
+        direccionRepository.deleteById(id);
+    }
+
+    public Direccion actualizarDireccion(Long id, Direccion direccionActualizada) {
+        direccionActualizada.setId(id);
+        return direccionRepository.save(direccionActualizada);
+    }
+
+    public Optional<Direccion> actualizarParcialmenteDireccion(Long id, Direccion datosActualizados) {
+        Optional<Direccion> direccionExistente = direccionRepository.findById(id);
+        if (direccionExistente.isPresent()) {
+            Direccion direccion = direccionExistente.get();
+            if (datosActualizados.getCalle() != null) {
+                direccion.setCalle(datosActualizados.getCalle());
+            }
+            if (datosActualizados.getNumero() != null) {
+                direccion.setNumero(datosActualizados.getNumero());
+            }
+                if (datosActualizados.getComuna() != null) {
+                    direccion.setComuna(datosActualizados.getComuna());
+                }
+            return Optional.of(direccionRepository.save(direccion));
+        }
+        return Optional.empty();
+    }
 }

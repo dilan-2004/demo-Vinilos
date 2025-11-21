@@ -40,5 +40,34 @@ public class ImagenService {
         return imagenRepository.findAll();
     }
 
-   
+    public void eliminarImagen(Long id) {
+        imagenRepository.deleteById(id);
+    }
+
+    public Imagen actualizarImagen(Long id, Imagen imagenActualizada) {
+        imagenActualizada.setId(id);
+        if (imagenActualizada.getProducto() != null && imagenActualizada.getProducto().getId() != null) {
+            Producto producto = productoRepository.findById(imagenActualizada.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            imagenActualizada.setProducto(producto);
+        }
+        return imagenRepository.save(imagenActualizada);
+    }
+
+    public Optional<Imagen> actualizarParcialmenteImagen(Long id, Imagen datosActualizados) {
+        Optional<Imagen> imagenExistente = imagenRepository.findById(id);
+        if (imagenExistente.isPresent()) {
+            Imagen imagen = imagenExistente.get();
+            if (datosActualizados.getUrl() != null) {
+                imagen.setUrl(datosActualizados.getUrl());
+            }
+            if (datosActualizados.getProducto() != null && datosActualizados.getProducto().getId() != null) {
+                Producto producto = productoRepository.findById(datosActualizados.getProducto().getId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                imagen.setProducto(producto);
+            }
+            return Optional.of(imagenRepository.save(imagen));
+        }
+        return Optional.empty();
+    }
 }

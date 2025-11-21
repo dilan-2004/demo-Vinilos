@@ -25,4 +25,25 @@ public class MetodoPagoService {
     public MetodoPago guardarMetodoPago(MetodoPago metodoPago) {
         return metodoPagoRepository.save(metodoPago);
     }
+
+    public void eliminarMetodoPago(Long id) {
+        metodoPagoRepository.deleteById(id);
+    }
+
+    public MetodoPago actualizarMetodoPago(Long id, MetodoPago metodoPagoActualizado) {
+        metodoPagoActualizado.setId(id);
+        return metodoPagoRepository.save(metodoPagoActualizado);
+    }
+
+    public Optional<MetodoPago> actualizarParcialmenteMetodoPago(Long id, MetodoPago datosActualizados) {
+        Optional<MetodoPago> metodoPagoExistente = metodoPagoRepository.findById(id);
+        if (metodoPagoExistente.isPresent()) {
+            MetodoPago metodoPago = metodoPagoExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                metodoPago.setNombre(datosActualizados.getNombre());
+            }
+            return Optional.of(metodoPagoRepository.save(metodoPago));
+        }
+        return Optional.empty();
+    }
 }

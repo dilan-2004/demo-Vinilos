@@ -25,4 +25,25 @@ public class RolService {
     public Rol guardarRol(Rol rol) {
         return rolRepository.save(rol);
     }
+
+    public void eliminarRol(Long id) {
+        rolRepository.deleteById(id);
+    }
+
+    public Rol actualizarRol(Long id, Rol rolActualizado) {
+        rolActualizado.setId(id);
+        return rolRepository.save(rolActualizado);
+    }
+
+    public Optional<Rol> actualizarParcialmenteRol(Long id, Rol datosActualizados) {
+        Optional<Rol> rolExistente = rolRepository.findById(id);
+        if (rolExistente.isPresent()) {
+            Rol rol = rolExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                rol.setNombre(datosActualizados.getNombre());
+            }
+            return Optional.of(rolRepository.save(rol));
+        }
+        return Optional.empty();
+    }
 }

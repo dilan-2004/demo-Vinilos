@@ -11,4 +11,6 @@ import com.example.demo.model.Rol;
 public interface RolRepository extends JpaRepository<Rol, Integer> {
 
     Optional<Rol> findById(Long id);
+
+    void deleteById(Long id);
 }

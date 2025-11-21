@@ -31,4 +31,24 @@ public class MetodoPagoController {
     public ResponseEntity<MetodoPago> crearMetodoPago(@RequestBody MetodoPago metodoPago) {
         return ResponseEntity.ok(metodoPagoService.guardarMetodoPago(metodoPago));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarMetodoPago(@PathVariable Long id) {
+        metodoPagoService.eliminarMetodoPago(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable Long id, @RequestBody MetodoPago metodoPagoActualizado) {
+        return metodoPagoService.obtenerPorId(id)
+                .map(metodoPago -> ResponseEntity.ok(metodoPagoService.actualizarMetodoPago(id, metodoPagoActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MetodoPago> actualizarParcialmenteMetodoPago(@PathVariable Long id, @RequestBody MetodoPago datosActualizados) {
+        return metodoPagoService.actualizarParcialmenteMetodoPago(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

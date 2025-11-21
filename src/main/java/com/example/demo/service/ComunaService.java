@@ -25,4 +25,24 @@ public class ComunaService {
     public Comuna guardarComuna(Comuna comuna) {
         return comunaRepository.save(comuna);
     }
+    public void eliminarComuna(Long id) {
+        comunaRepository.deleteById(id);
+    }
+
+    public Comuna actualizarComuna(Long id, Comuna comunaActualizada) {
+        comunaActualizada.setId(id);
+        return comunaRepository.save(comunaActualizada);
+    }
+
+    public Optional<Comuna> actualizarParcialmenteComuna(Long id, Comuna datosActualizados) {
+        Optional<Comuna> comunaExistente = comunaRepository.findById(id);
+        if (comunaExistente.isPresent()) {
+            Comuna comuna = comunaExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                comuna.setNombre(datosActualizados.getNombre());
+            }
+            return Optional.of(comunaRepository.save(comuna));
+        }
+        return Optional.empty();
+    }
 }

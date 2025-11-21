@@ -36,4 +36,24 @@ public class ImagenController {
     public ResponseEntity<List<Imagen>> obtenerImagenesPorProducto(@PathVariable Long productoId) {
         return ResponseEntity.ok(imagenService.obtenerImagenesPorProducto(productoId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarImagen(@PathVariable Long id) {
+        imagenService.eliminarImagen(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Imagen> actualizarImagen(@PathVariable Long id, @RequestBody Imagen imagenActualizada) {
+        return imagenService.obtenerPorId(id)
+                .map(imagen -> ResponseEntity.ok(imagenService.actualizarImagen(id, imagenActualizada)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Imagen> actualizarParcialmenteImagen(@PathVariable Long id, @RequestBody Imagen datosActualizados) {
+        return imagenService.actualizarParcialmenteImagen(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

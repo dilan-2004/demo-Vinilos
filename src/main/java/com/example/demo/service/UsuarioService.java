@@ -29,4 +29,31 @@ public class UsuarioService {
     public Optional<Usuario> obtenerPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
+
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
+    }
+
+    public Usuario actualizarUsuario(Long id, Usuario usuarioActualizado) {
+        usuarioActualizado.setId(id);
+        return usuarioRepository.save(usuarioActualizado);
+    }
+
+    public Optional<Usuario> actualizarParcialmenteUsuario(Long id, Usuario datosActualizados) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (usuarioExistente.isPresent()) {
+            Usuario usuario = usuarioExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                usuario.setNombre(datosActualizados.getNombre());
+            }
+            if (datosActualizados.getEmail() != null) {
+                usuario.setEmail(datosActualizados.getEmail());
+            }
+            if (datosActualizados.getPassword() != null) {
+                usuario.setPassword(datosActualizados.getPassword());
+            }
+            return Optional.of(usuarioRepository.save(usuario));
+        }
+        return Optional.empty();
+    }
 }

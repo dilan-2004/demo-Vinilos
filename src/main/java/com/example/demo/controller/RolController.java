@@ -31,4 +31,24 @@ public class RolController {
     public ResponseEntity<Rol> crearRol(@RequestBody Rol rol) {
         return ResponseEntity.ok(rolService.guardarRol(rol));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarRol(@PathVariable Long id) {
+        rolService.eliminarRol(id);
+        return ResponseEntity.noContent().build(); 
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Rol> actualizarRol(@PathVariable Long id, @RequestBody Rol rolActualizado) {
+        return rolService.obtenerPorId(id)
+                .map(rol -> ResponseEntity.ok(rolService.actualizarRol(id, rolActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Rol> actualizarParcialmenteRol(@PathVariable Long id, @RequestBody Rol datosActualizados) {
+        return rolService.actualizarParcialmenteRol(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

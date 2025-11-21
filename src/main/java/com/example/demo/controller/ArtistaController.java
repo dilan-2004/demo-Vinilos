@@ -31,4 +31,24 @@ public class ArtistaController {
     public ResponseEntity<Artista> crearArtista(@RequestBody Artista artista) {
         return ResponseEntity.ok(artistaService.guardarArtista(artista));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarArtista(@PathVariable Long id) {
+        artistaService.eliminarArtista(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Artista> actualizarArtista(@PathVariable Long id, @RequestBody Artista artistaActualizado) {
+        return artistaService.obtenerPorId(id)
+                .map(artista -> ResponseEntity.ok(artistaService.actualizarArtista(id, artistaActualizado)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Artista> actualizarParcialmenteArtista(@PathVariable Long id, @RequestBody Artista datosActualizados) {
+        return artistaService.actualizarParcialmenteArtista(id, datosActualizados)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

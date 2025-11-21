@@ -25,4 +25,24 @@ public class EstadoService {
     public Estado guardarEstado(Estado estado) {
         return estadoRepository.save(estado);
     }
+    public void eliminarEstado(Long id) {
+        estadoRepository.deleteById(id);
+    }
+
+    public Estado actualizarEstado(Long id, Estado estadoActualizado) {
+        estadoActualizado.setId(id);
+        return estadoRepository.save(estadoActualizado);
+    }
+
+    public Optional<Estado> actualizarParcialmenteEstado(Long id, Estado datosActualizados) {
+        Optional<Estado> estadoExistente = estadoRepository.findById(id);
+        if (estadoExistente.isPresent()) {
+            Estado estado = estadoExistente.get();
+            if (datosActualizados.getNombre() != null) {
+                estado.setNombre(datosActualizados.getNombre());
+            }
+            return Optional.of(estadoRepository.save(estado));
+        }
+        return Optional.empty();
+    }
 }
