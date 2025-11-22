@@ -25,7 +25,6 @@ public class Rol {
     private String nombre;
 
     public void setId(Long id2) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setId'");
     }
 }
