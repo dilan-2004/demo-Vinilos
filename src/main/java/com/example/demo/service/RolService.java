@@ -18,7 +18,7 @@ public class RolService {
         return rolRepository.findAll();
     }
 
-    public Optional<Rol> obtenerPorId(Long id) {
+    public Optional<Rol> obtenerPorId(Integer id) {
         return rolRepository.findById(id);
     }
 
@@ -26,16 +26,16 @@ public class RolService {
         return rolRepository.save(rol);
     }
 
-    public void eliminarRol(Long id) {
+    public void eliminarRol(Integer id) {
         rolRepository.deleteById(id);
     }
 
-    public Rol actualizarRol(Long id, Rol rolActualizado) {
+    public Rol actualizarRol(Integer id, Rol rolActualizado) {
         rolActualizado.setId(id);
         return rolRepository.save(rolActualizado);
     }
 
-    public Optional<Rol> actualizarParcialmenteRol(Long id, Rol datosActualizados) {
+    public Optional<Rol> actualizarParcialmenteRol(Integer id, Rol datosActualizados) {
         Optional<Rol> rolExistente = rolRepository.findById(id);
         if (rolExistente.isPresent()) {
             Rol rol = rolExistente.get();

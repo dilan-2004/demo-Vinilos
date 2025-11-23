@@ -23,7 +23,4 @@ public class Rol {
     @Column(unique = true, nullable = false)
     private String nombre;
 
-    public void setId(Long id2) {
-        throw new UnsupportedOperationException("Unimplemented method 'setId'");
-    }
 }

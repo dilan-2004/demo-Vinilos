@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,9 @@ public class Usuario {
     private Long id;
 
     private String nombre;
+    @Column(name = "correo_usuario")
     private String email;
+    @Column(name = "contrasena_usuario")
     private String password;
 
     @ManyToOne
