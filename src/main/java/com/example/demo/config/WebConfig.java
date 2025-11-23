@@ -16,7 +16,10 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("*")  // Cambia "*" por tu dominio si es necesario
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+                        .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
+                        .allowCredentials(false);
             }
         };
     }
