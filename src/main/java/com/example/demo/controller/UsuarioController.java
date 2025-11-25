@@ -5,15 +5,19 @@ import com.example.demo.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1/usuarios")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -29,6 +33,8 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+        // Log incoming payload for debugging
+        logger.info("[CREAR-USUARIO] request body: {}", usuario);
         return ResponseEntity.ok(usuarioService.guardarUsuario(usuario));
     }
 
@@ -53,7 +59,8 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Usuario> actualizarParcialmenteUsuario(@PathVariable Long id, @RequestBody Usuario datosActualizados) {
+    public ResponseEntity<Usuario> actualizarParcialmenteUsuario(@PathVariable Long id,
+            @RequestBody Usuario datosActualizados) {
         return usuarioService.actualizarParcialmenteUsuario(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

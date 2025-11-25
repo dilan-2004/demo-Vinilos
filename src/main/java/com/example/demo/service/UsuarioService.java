@@ -17,7 +17,7 @@ public class UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Autowired
     private com.example.demo.repository.RolRepository rolRepository;
 
@@ -34,17 +34,14 @@ public class UsuarioService {
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
 
-        // Resolve role reference: if client sent { rol: { id: N } }, fetch the managed Rol entity
         if (usuario.getRol() != null && usuario.getRol().getId() != null) {
             Integer rolId = usuario.getRol().getId();
             var optRol = rolRepository.findById(rolId);
             optRol.ifPresent(usuario::setRol);
         } else {
-            // If frontend didn't provide a role, assign the default USUARIO role (id = 2)
             rolRepository.findById(2).ifPresentOrElse(usuario::setRol, () -> usuario.setRol(null));
         }
 
-        // Ensure we don't try to persist entity with id=0 from client
         if (usuario.getId() != null && usuario.getId() == 0L) {
             usuario.setId(null);
         }

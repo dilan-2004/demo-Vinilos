@@ -7,5 +7,5 @@ import com.example.demo.model.Marca;
 
 @Repository
 public interface MarcaRepository extends JpaRepository<Marca, Long> {
-    
+    Marca findByNombre(String nombre);
 }

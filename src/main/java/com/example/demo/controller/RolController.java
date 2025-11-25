@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/v1/roles")
 public class RolController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class RolController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarRol(@PathVariable Integer id) {
         rolService.eliminarRol(id);
-        return ResponseEntity.noContent().build(); 
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

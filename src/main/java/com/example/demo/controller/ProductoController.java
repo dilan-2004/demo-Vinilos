@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 public class ProductoController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.guardarProducto(producto));
     }
 
-     @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         productoService.eliminarProducto(id);
@@ -42,14 +42,16 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id,
+            @RequestBody Producto productoActualizado) {
         return productoService.obtenerPorId(id)
                 .map(producto -> ResponseEntity.ok(productoService.actualizarProducto(id, productoActualizado)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Producto> actualizarParcialmenteProducto(@PathVariable Long id, @RequestBody Producto datosActualizados) {
+    public ResponseEntity<Producto> actualizarParcialmenteProducto(@PathVariable Long id,
+            @RequestBody Producto datosActualizados) {
         return productoService.actualizarParcialmenteProducto(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -1,17 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Artista;
-import com.example.demo.model.Genero;
-import com.example.demo.model.Marca;
-import com.example.demo.model.Producto;
-import com.example.demo.repository.ArtistaRepository;
-import com.example.demo.repository.GeneroRepository;
-import com.example.demo.repository.MarcaRepository;
-import com.example.demo.repository.ProductoRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +19,10 @@ public class ProductoService {
     private ArtistaRepository artistaRepository;
 
     @Autowired
-    private GeneroRepository generoRepository;
+    private MarcaRepository marcaRepository;
 
     @Autowired
-    private MarcaRepository marcaRepository;
+    private GeneroRepository generoRepository;
 
     public List<Producto> obtenerTodos() {
         return productoRepository.findAll();
@@ -38,32 +32,9 @@ public class ProductoService {
         return productoRepository.findById(id);
     }
 
+    @Transactional
     public Producto guardarProducto(Producto producto) {
-        // Asociar artistas
-        if (producto.getArtistas() != null && !producto.getArtistas().isEmpty()) {
-            List<Artista> artistasGuardados = new ArrayList<>();
-            for (Artista artista : producto.getArtistas()) {
-                Artista encontrado = artistaRepository.findById(artista.getId())
-                        .orElseThrow(() -> new RuntimeException("Artista no encontrado"));
-                artistasGuardados.add(encontrado);
-            }
-            producto.setArtistas(artistasGuardados);
-        }
-
-        // Asociar género
-        if (producto.getGenero() != null && producto.getGenero().getId() > 0) {
-            Genero genero = generoRepository.findById(producto.getGenero().getId())
-                    .orElseThrow(() -> new RuntimeException("Género no encontrado"));
-            producto.setGenero(genero);
-        }
-
-        // Asociar marca
-        if (producto.getMarca() != null && producto.getMarca().getId() > 0) {
-            Marca marca = marcaRepository.findById(producto.getMarca().getId())
-                    .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-            producto.setMarca(marca);
-        }
-
+        manejarRelaciones(producto);
         return productoRepository.save(producto);
     }
 
@@ -71,76 +42,75 @@ public class ProductoService {
         productoRepository.deleteById(id);
     }
 
+    @Transactional
     public Producto actualizarProducto(Long id, Producto productoActualizado) {
         productoActualizado.setId(id);
-        // Asociar artistas
-        if (productoActualizado.getArtistas() != null && !productoActualizado.getArtistas().isEmpty()) {
-            List<Artista> artistasGuardados = new ArrayList<>();
-            for (Artista artista : productoActualizado.getArtistas()) {
-                Artista encontrado = artistaRepository.findById(artista.getId())
-                        .orElseThrow(() -> new RuntimeException("Artista no encontrado"));
-                artistasGuardados.add(encontrado);
-            }
-            productoActualizado.setArtistas(artistasGuardados);
-        }
-
-        // Asociar género
-        if (productoActualizado.getGenero() != null && productoActualizado.getGenero().getId() > 0) {
-            Genero genero = generoRepository.findById(productoActualizado.getGenero().getId())
-                    .orElseThrow(() -> new RuntimeException("Género no encontrado"));
-            productoActualizado.setGenero(genero);
-        }
-
-        // Asociar marca
-        if (productoActualizado.getMarca() != null && productoActualizado.getMarca().getId() > 0) {
-            Marca marca = marcaRepository.findById(productoActualizado.getMarca().getId())
-                    .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-            productoActualizado.setMarca(marca);
-        }
-
+        manejarRelaciones(productoActualizado);
         return productoRepository.save(productoActualizado);
     }
 
+    @Transactional
     public Optional<Producto> actualizarParcialmenteProducto(Long id, Producto datosActualizados) {
-        Optional<Producto> productoExistente = productoRepository.findById(id);
-        if (productoExistente.isPresent()) {
-            Producto producto = productoExistente.get();
-            if (datosActualizados.getTitulo() != null) {
-                producto.setTitulo(datosActualizados.getTitulo());
-            }
-            if (datosActualizados.getDescripcion() != null) {
-                producto.setDescripcion(datosActualizados.getDescripcion());
-            }
-            if (datosActualizados.getPrecio() != null) {
-                producto.setPrecio(datosActualizados.getPrecio());
-            }
-            if (datosActualizados.getStock() != null) {
-                producto.setStock(datosActualizados.getStock());
-            }
-            // Actualizar marca si se envía
-            if (datosActualizados.getMarca() != null && datosActualizados.getMarca().getId() > 0) {
-                Marca marca = marcaRepository.findById(datosActualizados.getMarca().getId())
-                        .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-                producto.setMarca(marca);
-            }
-            // Actualizar género si se envía
-            if (datosActualizados.getGenero() != null && datosActualizados.getGenero().getId() > 0) {
-                Genero genero = generoRepository.findById(datosActualizados.getGenero().getId())
-                        .orElseThrow(() -> new RuntimeException("Género no encontrado"));
-                producto.setGenero(genero);
-            }
-            // Actualizar artistas si se envían
-            if (datosActualizados.getArtistas() != null && !datosActualizados.getArtistas().isEmpty()) {
-                List<Artista> artistasGuardados = new ArrayList<>();
-                for (Artista artista : datosActualizados.getArtistas()) {
-                    Artista encontrado = artistaRepository.findById(artista.getId())
-                            .orElseThrow(() -> new RuntimeException("Artista no encontrado"));
-                    artistasGuardados.add(encontrado);
-                }
-                producto.setArtistas(artistasGuardados);
-            }
-            return Optional.of(productoRepository.save(producto));
+        Optional<Producto> existenteOpt = productoRepository.findById(id);
+        if (existenteOpt.isEmpty()) return Optional.empty();
+
+        Producto existente = existenteOpt.get();
+
+        // Actualizar campos simples
+        if (datosActualizados.getTitulo() != null) existente.setTitulo(datosActualizados.getTitulo());
+        if (datosActualizados.getDescripcion() != null) existente.setDescripcion(datosActualizados.getDescripcion());
+        if (datosActualizados.getPrecio() != null) existente.setPrecio(datosActualizados.getPrecio());
+        if (datosActualizados.getStock() != null) existente.setStock(datosActualizados.getStock());
+        if (datosActualizados.getImagenUrl() != null) existente.setImagenUrl(datosActualizados.getImagenUrl());
+
+        if (datosActualizados.getArtista() != null) {
+            existente.setArtista(datosActualizados.getArtista());
+            manejarArtista(existente);
         }
-        return Optional.empty();
+        if (datosActualizados.getMarca() != null) {
+            existente.setMarca(datosActualizados.getMarca());
+            manejarMarca(existente);
+        }
+        if (datosActualizados.getGenero() != null) {
+            existente.setGenero(datosActualizados.getGenero());
+            manejarGenero(existente);
+        }
+
+        return Optional.of(productoRepository.save(existente));
+    }
+
+    private void manejarRelaciones(Producto producto) {
+        manejarArtista(producto);
+        manejarMarca(producto);
+        manejarGenero(producto);
+    }
+
+    private void manejarArtista(Producto producto) {
+        if (producto.getArtista() != null) {
+            if (producto.getArtista().getId() == null) {
+                Artista existente = artistaRepository.findByNombre(producto.getArtista().getNombre());
+                if (existente != null) {
+                    producto.setArtista(existente);
+                }
+            }
+        }
+    }
+
+    private void manejarMarca(Producto producto) {
+        if (producto.getMarca() != null && producto.getMarca().getId() == null) {
+            Marca existente = marcaRepository.findByNombre(producto.getMarca().getNombre());
+            if (existente != null) {
+                producto.setMarca(existente);
+            }
+        }
+    }
+
+    private void manejarGenero(Producto producto) {
+        if (producto.getGenero() != null && producto.getGenero().getId() == null) {
+            Genero existente = generoRepository.findByNombre(producto.getGenero().getNombre());
+            if (existente != null) {
+                producto.setGenero(existente);
+            }
+        }
     }
 }

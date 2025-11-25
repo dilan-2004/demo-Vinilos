@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/metodos-pago")
+@RequestMapping("/api/v1/metodos-pago")
 public class MetodoPagoController {
 
     @Autowired
@@ -39,14 +39,16 @@ public class MetodoPagoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable Long id, @RequestBody MetodoPago metodoPagoActualizado) {
+    public ResponseEntity<MetodoPago> actualizarMetodoPago(@PathVariable Long id,
+            @RequestBody MetodoPago metodoPagoActualizado) {
         return metodoPagoService.obtenerPorId(id)
                 .map(metodoPago -> ResponseEntity.ok(metodoPagoService.actualizarMetodoPago(id, metodoPagoActualizado)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MetodoPago> actualizarParcialmenteMetodoPago(@PathVariable Long id, @RequestBody MetodoPago datosActualizados) {
+    public ResponseEntity<MetodoPago> actualizarParcialmenteMetodoPago(@PathVariable Long id,
+            @RequestBody MetodoPago datosActualizados) {
         return metodoPagoService.actualizarParcialmenteMetodoPago(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

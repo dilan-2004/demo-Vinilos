@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired
@@ -25,24 +27,51 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
-        if (email == null || password == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "email and password required"));
-        }
+        try {
+            String email = payload.get("email");
+            String password = payload.get("password");
+            
+            if (email == null || password == null) {
+                System.out.println("DEBUG: Email o password faltantes");
+                return ResponseEntity.badRequest().body(Map.of("error", "Email y contraseña requeridos"));
+            }
 
-        return usuarioRepository.findByEmail(email)
-                .map(usuario -> {
-                    if (passwordEncoder.matches(password, usuario.getPassword())) {
-                        String token = jwtUtil.generateToken(usuario.getId(), usuario.getEmail(), usuario.getRol() != null ? usuario.getRol().getNombre() : "USER");
-                        Map<String, Object> resp = new HashMap<>();
-                        resp.put("token", token);
-                        resp.put("user", usuario);
-                        return ResponseEntity.ok(resp);
-                    } else {
-                        return ResponseEntity.status(401).body(Map.of("error", "invalid credentials"));
-                    }
-                })
-                .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "invalid credentials")));
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+            if (usuarioOpt.isEmpty()) {
+                System.out.println("DEBUG: Usuario no encontrado: " + email);
+                return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+            }
+
+            Usuario usuario = usuarioOpt.get();
+            String roleName = "USER";
+            
+            if (usuario.getRol() != null && usuario.getRol().getNombre() != null) {
+                roleName = usuario.getRol().getNombre();
+            }
+            System.out.println("DEBUG: Rol detectado: " + roleName);
+
+            if (!passwordEncoder.matches(password, usuario.getPassword())) {
+                System.out.println("DEBUG: Contraseña incorrecta para: " + email);
+                return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
+            }
+
+            String token = jwtUtil.generateToken(usuario.getId(), email, roleName);
+            System.out.println("DEBUG: Login exitoso para: " + email);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", Map.of(
+                "id", usuario.getId(),
+                "email", email,
+                "rol", roleName
+            ));
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR FATAL EN LOGIN:");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Error interno"));
+        }
     }
 }

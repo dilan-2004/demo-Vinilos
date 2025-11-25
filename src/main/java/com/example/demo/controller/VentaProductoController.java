@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/venta-productos")
+@RequestMapping("/api/v1/venta-productos")
 public class VentaProductoController {
 
     @Autowired
@@ -39,14 +39,17 @@ public class VentaProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VentaProducto> actualizarVentaProducto(@PathVariable Long id, @RequestBody VentaProducto ventaProductoActualizado) {
+    public ResponseEntity<VentaProducto> actualizarVentaProducto(@PathVariable Long id,
+            @RequestBody VentaProducto ventaProductoActualizado) {
         return ventaProductoService.obtenerPorId(id)
-                .map(ventaProducto -> ResponseEntity.ok(ventaProductoService.actualizarVentaProducto(id, ventaProductoActualizado)))
+                .map(ventaProducto -> ResponseEntity
+                        .ok(ventaProductoService.actualizarVentaProducto(id, ventaProductoActualizado)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<VentaProducto> actualizarParcialmenteVentaProducto(@PathVariable Long id, @RequestBody VentaProducto datosActualizados) {
+    public ResponseEntity<VentaProducto> actualizarParcialmenteVentaProducto(@PathVariable Long id,
+            @RequestBody VentaProducto datosActualizados) {
         return ventaProductoService.actualizarParcialmenteVentaProducto(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -1,18 +1,13 @@
+// src/main/java/com/example/demo/model/Producto.java
 package com.example.demo.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,20 +28,17 @@ public class Producto {
     private String descripcion;
     private Double precio;
     private String stock;
+    private String imagenUrl;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "artista_id")
+    private Artista artista;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "marca_id")
     private Marca marca;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "genero_id")
     private Genero genero;
-
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Imagen> imagenes = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "producto_artista", joinColumns = @JoinColumn(name = "producto_id"), inverseJoinColumns = @JoinColumn(name = "artista_id"))
-    private List<Artista> artistas = new ArrayList<>();
-
 }

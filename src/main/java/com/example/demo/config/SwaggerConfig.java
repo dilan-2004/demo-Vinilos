@@ -10,13 +10,12 @@ import io.swagger.v3.oas.models.info.Info;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI(){
+    public OpenAPI customOpenAPI() {
         return new OpenAPI().info(
-            new Info()
-            .title("API demo para vinilos")
-            .version("0.1")
-            .description("Api de prueba para la gestion de vinilos")
-        );
+                new Info()
+                        .title("API demo para vinilos")
+                        .version("0.1")
+                        .description("Api de para la gestion de vinilos"));
     }
 
 }

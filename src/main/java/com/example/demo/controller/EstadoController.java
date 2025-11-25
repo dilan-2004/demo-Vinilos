@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/estados")
+@RequestMapping("/api/v1/estados")
 public class EstadoController {
 
     @Autowired
@@ -31,7 +31,8 @@ public class EstadoController {
     public ResponseEntity<Estado> crearEstado(@RequestBody Estado estado) {
         return ResponseEntity.ok(estadoService.guardarEstado(estado));
     }
-     @DeleteMapping("/{id}")
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEstado(@PathVariable Long id) {
         estadoService.eliminarEstado(id);
         return ResponseEntity.noContent().build();
@@ -45,7 +46,8 @@ public class EstadoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Estado> actualizarParcialmenteEstado(@PathVariable Long id, @RequestBody Estado datosActualizados) {
+    public ResponseEntity<Estado> actualizarParcialmenteEstado(@PathVariable Long id,
+            @RequestBody Estado datosActualizados) {
         return estadoService.actualizarParcialmenteEstado(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

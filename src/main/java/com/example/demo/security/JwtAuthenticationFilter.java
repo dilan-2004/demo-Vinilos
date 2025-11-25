@@ -29,8 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -42,17 +42,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Long userId = Long.parseLong(subj);
                     Usuario usuario = usuarioRepository.findById(userId).orElse(null);
                     if (usuario != null) {
-                        String roleName = (String) claims.get("role");
-                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleName != null ? roleName : "USER");
+                        String roleName = (String) claims.get("rol");
+                        String springRole = "ROLE_" + (roleName != null ? roleName : "USER");
+
+                        System.out.println("DEBUG JWT - Rol final: " + springRole);
+
+                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(springRole);
+
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                usuario, null, Collections.singletonList(authority)
-                        );
+                                usuario, null, Collections.singletonList(authority));
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }
             } catch (Exception e) {
-                // invalid token -> ignore and continue (security will block access to protected resources)
+                System.out.println("Error en JWT Authentication Filter: " + e.getMessage());
             }
         }
 

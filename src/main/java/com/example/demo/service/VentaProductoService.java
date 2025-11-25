@@ -26,7 +26,7 @@ public class VentaProductoService {
         return ventaProductoRepository.save(ventaProducto);
     }
 
-     public void eliminarVentaProducto(Long id) {
+    public void eliminarVentaProducto(Long id) {
         ventaProductoRepository.deleteById(id);
     }
 

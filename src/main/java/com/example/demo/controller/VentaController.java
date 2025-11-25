@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ventas")
+@RequestMapping("/api/v1/ventas")
 public class VentaController {
 
     @Autowired
@@ -46,7 +46,8 @@ public class VentaController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Venta> actualizarParcialmenteVenta(@PathVariable Long id, @RequestBody Venta datosActualizados) {
+    public ResponseEntity<Venta> actualizarParcialmenteVenta(@PathVariable Long id,
+            @RequestBody Venta datosActualizados) {
         return ventaService.actualizarParcialmenteVenta(id, datosActualizados)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

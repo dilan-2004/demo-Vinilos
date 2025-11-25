@@ -25,6 +25,7 @@ public class EstadoService {
     public Estado guardarEstado(Estado estado) {
         return estadoRepository.save(estado);
     }
+
     public void eliminarEstado(Long id) {
         estadoRepository.deleteById(id);
     }
